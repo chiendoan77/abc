@@ -1,0 +1,53 @@
+<!-- <div>
+    <h3>Create Stock Item</h3>
+    <div class="form-group">
+        <form [formGroup]="stockForm" (ngSubmit)="onSubmit()">
+            <div class="stock-name">
+                <input type="text" formControlName="name" placeholder="Stock Name" />
+                <div *ngIf="stockForm.get('name')?.invalid && (stockForm.get('name')?.dirty || stockForm.get('name')?.touched)">
+                    Name is required
+                </div>
+            </div>
+            <div class="stock-code">
+                <input type="text" formControlName="code" placeholder="Stock Code" />
+                <div *ngIf="stockForm.get('code')?.invalid && (stockForm.get('code')?.dirty || stockForm.get('code')?.touched)">
+                    <div *ngIf="stockForm.get('code')?.errors?.['required']">
+                        Code is required
+                    </div>
+                </div>
+            </div>
+            <div class="stock-price">
+                <input type="number" formControlName="price" placeholder="Stock Price" />
+                <div *ngIf="stockForm.get('price')?.invalid && (stockForm.get('price')?.dirty || stockForm.get('price')?.touched)">
+                    <div *ngIf="stockForm.get('price')?.errors?.['required']">
+                        Price is required
+                    </div>
+                    <div *ngIf="stockForm.get('price')?.errors?.['min']">
+                        Price must be a positive number
+                    </div>
+                </div>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <p>Form control values: {{ stockForm.value | json }}</p>
+    <p>Form control status: {{ stockForm.status | json }}</p>
+</div> -->
+<h2>create stock form</h2>
+<div class="form-group">
+    <form [formGroup]="stockForm" (ngSubmit)="onSubmit()">
+        <button type="submit">submit</button>
+        <button type="button" (click)="resetForm()">
+            Reset
+        </button>
+        <button type="button" (click)="loadStockForm()">
+            Load
+        </button>
+        <button type="button" (click)="patchStockForm()">
+            patch
+        </button>
+    </form>
+    <p>Form control values: {{ stockForm.value | json }}</p>
+    <p>Form control status: {{ stockForm.status | json }}</p>
+</div>
