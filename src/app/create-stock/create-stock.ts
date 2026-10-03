@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Stock } from '../model/stock';
 import { JsonPipe, NgIf } from '@angular/common';
@@ -29,6 +29,7 @@ export class CreateStock {
   //   exchange: new FormControl(''),
   // });
   //----------------------------------------
+  @Output() stockCreated = new EventEmitter<Stock>();
   private stock: Stock;
   public stockForm!: FormGroup;
   constructor( private fb: FormBuilder) {
@@ -58,7 +59,15 @@ export class CreateStock {
   //   this.priceVisited = true;
   // }
   onSubmit() {
+    const stock = new Stock(
+    this.stockForm.value.name,
+    this.stockForm.value.price,
+    this.stockForm.value.code,
+    this.stockForm.value.previousPrice,
+    this.stockForm.value.exchange
+  );
     console.log('Form submitted with stock:', this.stockForm.value);
+    this.stockCreated.emit(stock);
   }
   get name(){ return this.stockForm.get('name'); }
   get code(){ return this.stockForm.get('code'); }
@@ -69,17 +78,16 @@ export class CreateStock {
     let stockFormModel: Partial<Stock> = Object.assign({}, this.stock);
     delete stockFormModel.previousPrice;
     delete stockFormModel.favorite;
-    this.stockForm.patchValue(stockFormModel); 
+    this.stockForm.setValue(stockFormModel); 
   }
 
   patchStockForm(){
-    this.stock = new Stock("Test ${count++}", 20, 'TST', 10);
+    this.stock = new Stock("Test " + count++, 20, 'TST', 10);
     this.stockForm.patchValue(this.stock);
   }
 
   resetForm(){
-    this.stockForm.reset;
+    this.stockForm.reset();
   }
-
 
 }

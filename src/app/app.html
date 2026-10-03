@@ -14,5 +14,6 @@
     <button>Đăng nhập</button>
   </div>
 </div> -->
-<app-stock-item></app-stock-item>
-<app-create-stock></app-create-stock>
+<app-stock-list [stocks]="stocks"></app-stock-list>
+<!-- <app-stock-item></app-stock-item> -->
+<app-create-stock (stockCreated)="addStock($event)"></app-create-stock>

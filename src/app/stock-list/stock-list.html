@@ -1,0 +1,5 @@
+<h2>Stock List</h2>
+
+@for (stock of stocks; track $index) {
+  <app-stock-item [stock]="stock"></app-stock-item>
+}

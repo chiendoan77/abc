@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Stock } from '../model/stock';
 
 @Component({
@@ -8,11 +8,11 @@ import { Stock } from '../model/stock';
   templateUrl: './stock-item.html',
 })
 export class StockItem implements OnInit {
-  public stock!: Stock;
+  @Input() stock!: Stock;
   constructor() { }
 
   ngOnInit() {
-    this.stock = new Stock('Test Stock Company', 85, 'TSC', 80);
+    // this.stock = new Stock('Test Stock Company', 85, 'TSC', 80);
   }
   toggleFavorite(event: Event) {
     console.log('toggleFavorite called');
