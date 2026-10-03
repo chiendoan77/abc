@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CreateStock } from './create-stock/create-stock';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -12,6 +12,7 @@ import { Stock } from './model/stock';
   templateUrl: './app.html',
 })
 export class App {
+  @ViewChild(CreateStock) createStockComponent!: CreateStock;
   protected readonly title = signal('abc');
 
   stocks: Stock[] = [
@@ -28,7 +29,7 @@ export class App {
   ];
   addStock(stock: Stock) {
     console.log('Adding stock:', stock);
-    this.stocks.push(stock);
-    this.stocks = [...this.stocks]; 
-}
+    this.stocks = [...this.stocks, stock];
+    this.createStockComponent.resetForm();
+  }
 }
