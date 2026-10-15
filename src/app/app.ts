@@ -10,5 +10,5 @@ import { StockList } from './stock-list/stock-list';
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('abc');
+  protected readonly title = signal('APP TEST ANGULAR');
 }

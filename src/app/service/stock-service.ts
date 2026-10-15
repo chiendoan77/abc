@@ -1,76 +1,67 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
 import { Stock } from '../model/stock';
-
-export interface StockResult {
-  success: boolean;
-  message: string;
-}
 
 @Injectable({ providedIn: 'root' })
 export class StockService {
-  private readonly stockState = signal<Stock[]>([
+  private stocks: Stock[] = [
     new Stock('Test Stock Company', 85, 'TSC', 80),
     new Stock('Test Stock Company 2', 25, 'TSC2', 20),
     new Stock('Test Stock Company 3', 50, 'TSC3', 45),
-  ]);
+  ];
+  private stocksSubject = new BehaviorSubject<Stock[]>([...this.stocks]);
 
-  readonly stocks = this.stockState.asReadonly();
-
-  createStock(stock: Stock): StockResult {
-    if (this.stockState().some((each) => each.code === stock.code)) {
-      return { success: false, message: `Stock code ${stock.code} already exists` };
-    }
-
-    this.stockState.update((stocks) => [...stocks, new Stock(
-      stock.name,
-      stock.price,
-      stock.code,
-      stock.previousPrice,
-      stock.exchange,
-    )]);
-    return { success: true, message: `Stock ${stock.code} created successfully` };
+  getStocks(): Observable<Stock[]> {
+    return this.stocksSubject.asObservable();
   }
 
-  toggleFavorite(stock: Stock): void {
-    this.stockState.update((stocks) => stocks.map((each) => {
-      if (each.code !== stock.code) return each;
+  createStock(stock: Stock): Observable<any> {
+    const found = this.stocks.find((each) => each.code === stock.code);
+    if (found) {
+      return of(false);
+    }
 
-      const updated = new Stock(
-        each.name,
-        each.price,
-        each.code,
-        each.previousPrice,
-        each.exchange,
-      );
-      updated.favorite = !each.favorite;
-      return updated;
-    }));
+    this.stocks.push(stock);
+    this.stocksSubject.next([...this.stocks]);
+    return of({ success: true, message: 'Stock created successfully ' + stock.code });
   }
 
-  deleteStock(stock: Stock): StockResult {
-    const stocks = this.stockState();
-    if (!stocks.some((each) => each.code === stock.code)) {
-      return { success: false, message: 'Stock not found' };
+  toggleFavorite(stock: Stock): Observable<Stock> {
+    const foundStock = this.stocks.find((each) => each.code === stock.code);
+    if (foundStock) {
+      foundStock.favorite = !foundStock.favorite;
+      this.stocksSubject.next([...this.stocks]);
+      return of(foundStock);
     }
-
-    this.stockState.update((current) => current.filter((each) => each.code !== stock.code));
-    return { success: true, message: 'Stock deleted successfully' };
+    return throwError(() => new Error('Stock not found'));
   }
 
-  updateStock(stock: Stock, originalCode: string = stock.code): StockResult {
-    const stocks = this.stockState();
-    if (!stocks.some((each) => each.code === originalCode)) {
-      return { success: false, message: 'Stock not found' };
+  deleteStock(stock: Stock): Observable<any> {
+    const index = this.stocks.findIndex((each) => each.code === stock.code);
+    if (index !== -1) {
+      this.stocks.splice(index, 1);
+      this.stocksSubject.next([...this.stocks]);
+      return of({ success: true, message: 'Stock deleted successfully' });
     }
-    if (stock.code !== originalCode && stocks.some((each) => each.code === stock.code)) {
-      return { success: false, message: `Stock code ${stock.code} already exists` };
-    }
+    return throwError(() => new Error('Stock not found'));
+  }
 
-    this.stockState.update((current) => current.map((each) =>
-      each.code === originalCode
-        ? new Stock(stock.name, stock.price, stock.code, stock.previousPrice, stock.exchange)
-        : each,
-    ));
-    return { success: true, message: 'Stock updated successfully' };
+  findStockByCode(code: string): Observable<Stock | undefined> {
+    const foundStock = this.stocks.find((each) => each.code === code);
+    return of(foundStock);
+  }
+
+  updateStock(stock: Stock, originalCode: string = stock.code): Observable<any> {
+    const foundStock = this.stocks.find((each) => each.code === originalCode);
+    if (foundStock) {
+      foundStock.name = stock.name;
+      foundStock.code = stock.code;
+      foundStock.price = stock.price;
+      foundStock.previousPrice = stock.previousPrice;
+      foundStock.exchange = stock.exchange;
+      this.stocksSubject.next([...this.stocks]);
+      return of({ success: true, message: 'Stock updated successfully' });
+    }
+    return throwError(() => new Error('Stock not found'));
   }
 }

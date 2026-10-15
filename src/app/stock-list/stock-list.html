@@ -9,11 +9,13 @@
   />
   <p>Search Code: {{ searchCode }}</p>
   </div>
-  @if (filteredStocks.length > 0) {
-    @for (stock of filteredStocks; track stock.code) {
-      <app-stock-item [stock]="stock"></app-stock-item>
+  @if (stocks$ | async; as stocks) {
+    @if (filteredStocks(stocks).length > 0) {
+      @for (stock of filteredStocks(stocks); track stock.code) {
+        <app-stock-item [stock]="stock"></app-stock-item>
+      }
+    } @else {
+      <p>No stocks available.</p>
     }
-  } @else {
-    <p>No stocks available.</p>
   }
 </div>

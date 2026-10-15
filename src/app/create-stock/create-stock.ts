@@ -71,12 +71,13 @@ export class CreateStock {
       return;
     }
 
-    const result = this.stockService.createStock(stock);
-    if (result.success) {
-      this.stockForm.reset({ name: '', price: 0, code: '', previousPrice: 0, exchange: '' });
-    } else {
-      this.stockForm.get('code')?.setErrors({ duplicate: true });
-    }
+    this.stockService.createStock(stock).subscribe((result) => {
+      if (result.success) {
+        this.stockForm.reset({ name: '', price: 0, code: '', previousPrice: 0, exchange: '' });
+      } else {
+        this.stockForm.get('code')?.setErrors({ duplicate: true });
+      }
+    });
   }
   get name(){ return this.stockForm.get('name'); }
   get code(){ return this.stockForm.get('code'); }

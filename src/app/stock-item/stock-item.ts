@@ -28,22 +28,21 @@ export class StockItem {
       return;
     }
 
-    const result = this.stockService.updateStock({
+    this.stockService.updateStock({
       ...this.editForm,
       price: Number(this.editForm.price),
       previousPrice: Number(this.editForm.previousPrice),
-    }, this.originalCode);
-    if (result.success) {
-      this.showDialog = false;
-    }
+    }, this.originalCode).subscribe((result) => {
+      if (result.success) this.showDialog = false;
+    });
   }
   constructor(private stockService: StockService) { }
 
   toggleFavorite() {
-    this.stockService.toggleFavorite(this.stock);
+    this.stockService.toggleFavorite(this.stock).subscribe();
   }
   deleteStock() {
-    this.stockService.deleteStock(this.stock);
+    this.stockService.deleteStock(this.stock).subscribe();
   }
 
 }
