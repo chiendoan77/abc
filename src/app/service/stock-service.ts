@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { Stock } from '../model/stock';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class StockService {
@@ -9,10 +10,12 @@ export class StockService {
     new Stock('Test Stock Company 2', 25, 'TSC2', 20),
     new Stock('Test Stock Company 3', 50, 'TSC3', 45),
   ];
-  private stocksSubject = new BehaviorSubject<Stock[]>([...this.stocks]);
+  stocksChanged = new Subject<void>();
+  
+  constructor(private http: HttpClient){}
 
   getStocks(): Observable<Stock[]> {
-    return this.stocksSubject.asObservable();
+    return of([...this.stocks]);
   }
 
   createStock(stock: Stock): Observable<any> {
@@ -22,7 +25,7 @@ export class StockService {
     }
 
     this.stocks.push(stock);
-    this.stocksSubject.next([...this.stocks]);
+    this.stocksChanged.next();
     return of({ success: true, message: 'Stock created successfully ' + stock.code });
   }
 
@@ -30,7 +33,7 @@ export class StockService {
     const foundStock = this.stocks.find((each) => each.code === stock.code);
     if (foundStock) {
       foundStock.favorite = !foundStock.favorite;
-      this.stocksSubject.next([...this.stocks]);
+      this.stocksChanged.next();
       return of(foundStock);
     }
     return throwError(() => new Error('Stock not found'));
@@ -40,7 +43,7 @@ export class StockService {
     const index = this.stocks.findIndex((each) => each.code === stock.code);
     if (index !== -1) {
       this.stocks.splice(index, 1);
-      this.stocksSubject.next([...this.stocks]);
+      this.stocksChanged.next();
       return of({ success: true, message: 'Stock deleted successfully' });
     }
     return throwError(() => new Error('Stock not found'));
@@ -59,7 +62,7 @@ export class StockService {
       foundStock.price = stock.price;
       foundStock.previousPrice = stock.previousPrice;
       foundStock.exchange = stock.exchange;
-      this.stocksSubject.next([...this.stocks]);
+      this.stocksChanged.next();
       return of({ success: true, message: 'Stock updated successfully' });
     }
     return throwError(() => new Error('Stock not found'));
