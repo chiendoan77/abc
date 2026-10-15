@@ -5,6 +5,7 @@ import { JsonPipe, NgIf } from '@angular/common';
 import { FormControl } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { StockService } from '../service/stock-service';
 
 let count = 1;
 
@@ -32,7 +33,7 @@ export class CreateStock {
   @Output() stockCreated = new EventEmitter<Stock>();
   private stock: Stock;
   public stockForm!: FormGroup;
-  constructor( private fb: FormBuilder) {
+  constructor( private fb: FormBuilder, private stockService: StockService) {
     this.createForm();
     this.stock = new Stock('Test' + count++, 20, 'TST', 10);
   }
@@ -67,7 +68,15 @@ export class CreateStock {
     this.stockForm.value.exchange
   );
     console.log('Form submitted with stock:', this.stockForm.value);
-    this.stockCreated.emit(stock);
+    this.stockService.createStock(stock).subscribe(result => {
+      if (result.success) {
+        console.log('Stock created successfully:', result.message);
+        this.stockCreated.emit(this.stock);
+        this.stockForm.reset();
+      } else {
+        console.error('Failed to create stock:', result.message);
+      }
+    });
   }
   get name(){ return this.stockForm.get('name'); }
   get code(){ return this.stockForm.get('code'); }
@@ -89,5 +98,4 @@ export class CreateStock {
   resetForm(){
     this.stockForm.reset();
   }
-
 }

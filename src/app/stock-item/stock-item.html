@@ -1,6 +1,89 @@
 <div class="stock-container">
-  <div class="name">{{stock.name + ' (' + stock.code + ')'}}</div>
-  <div class="price"
-       [class]="stock.isPositiveChange() ? 'positive' : 'negative'">$ {{stock.price}}</div>
-       <button (click)="toggleFavorite($event)" [disabled]="stock.favorite">Toggle Favorite</button>
+  <div class="name" (click)="openDetail()">
+    {{ stock.name }} ({{ stock.code }})
+  </div>
+
+  <div
+    class="price"
+    [class]="stock.isPositiveChange() ? 'positive' : 'negative'">
+    $ {{ stock.price }}
+  </div>
+
+  <button
+    (click)="toggleFavorite($event)"
+    [disabled]="stock.favorite">
+    Toggle Favorite
+  </button>
+
+  <button (click)="openDetail()">
+    View / Update
+  </button>
+
+  <button (click)="deleteStock($event)">
+    Delete Stock
+  </button>
 </div>
+
+@if (showDialog) {
+  <div class="dialog-overlay" (click)="closeDialog()">
+    <div
+      class="dialog"
+      (click)="$event.stopPropagation()">
+
+      <h2>Stock Details</h2>
+
+      <form #stockForm="ngForm" (ngSubmit)="saveStock()">
+
+        <label>Stock Name</label>
+        <input
+          type="text"
+          name="name"
+          [(ngModel)]="editForm.name"
+          required />
+
+        <label>Stock Code</label>
+        <input
+          type="text"
+          name="code"
+          [(ngModel)]="editForm.code"
+          required />
+
+        <label>Current Price</label>
+        <input
+          type="number"
+          name="price"
+          [(ngModel)]="editForm.price"
+          required
+          min="0" />
+
+        <label>Previous Price</label>
+        <input
+          type="number"
+          name="previousPrice"
+          [(ngModel)]="editForm.previousPrice"
+          required
+          min="0" />
+
+        <label>Exchange</label>
+        <input
+          type="text"
+          name="exchange"
+          [(ngModel)]="editForm.exchange" />
+
+        <div class="dialog-actions">
+          <button
+            type="button"
+            (click)="closeDialog()">
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            [disabled]="stockForm.invalid">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

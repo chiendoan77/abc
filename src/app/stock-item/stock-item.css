@@ -12,3 +12,179 @@
 .negative {
   color: red;
 }
+/* Nen mo phia sau dialog */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+  z-index: 1000;
+
+  animation: fadeIn 0.2s ease;
+}
+
+/* Khung dialog */
+.dialog {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 18px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+
+  animation: slideUp 0.25s ease;
+  box-sizing: border-box;
+}
+
+/* Tieu de */
+.dialog h2 {
+  margin: 0 0 24px;
+  padding-bottom: 16px;
+
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Form */
+.dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Nhan cua input */
+.dialog label {
+  margin-top: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* O nhap lieu */
+.dialog input {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+
+  font-size: 15px;
+  color: #1e293b;
+  background: #f8fafc;
+
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Khi click vao input */
+.dialog input:focus {
+  border-color: #3b82f6;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Khu vuc cac nut */
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Style chung cho nut trong dialog */
+.dialog-actions button {
+  padding: 11px 20px;
+  border: none;
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+/* Nut Cancel */
+.dialog-actions button[type="button"] {
+  color: #475569;
+  background: #e2e8f0;
+}
+
+.dialog-actions button[type="button"]:hover {
+  background: #cbd5e1;
+}
+
+/* Nut Save */
+.dialog-actions button[type="submit"] {
+  color: #ffffff;
+  background: #2563eb;
+}
+
+.dialog-actions button[type="submit"]:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* Nut Save khi form khong hop le */
+.dialog-actions button[type="submit"]:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Hieu ung hien dialog */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive cho dien thoai */
+@media (max-width: 480px) {
+  .dialog {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .dialog h2 {
+    font-size: 21px;
+  }
+
+  .dialog-actions button {
+    flex: 1;
+    padding: 11px 10px;
+  }
+}

@@ -9,7 +9,7 @@
                 </div>
             </div>
             <div class="stock-code">
-                <input type="text" formControlName="code" placeholder="Stock Code" />
+                <input type="text" formControlName="code"  placeholder="Stock Code" />
                 <div *ngIf="stockForm.get('code')?.invalid && (stockForm.get('code')?.dirty || stockForm.get('code')?.touched)">
                     <div *ngIf="stockForm.get('code')?.errors?.['required']">
                         Code is required
@@ -35,7 +35,7 @@
     <p>Form control status: {{ stockForm.status | json }}</p>
 </div>
 <h1>____</h1>
-<h2>create stock form</h2> 
+<!-- <h2>create stock form</h2> 
 <div class="form-group">
     <form [formGroup]="stockForm" (ngSubmit)="onSubmit()">
         <button type="submit">submit</button>
@@ -51,4 +51,4 @@
     </form>
     <p>Form control values: {{ stockForm.value | json }}</p>
     <p>Form control status: {{ stockForm.status | json }}</p>
-</div>
+</div> -->
