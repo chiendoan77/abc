@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Stock } from '../model/stock';
 import { JsonPipe, NgIf } from '@angular/common';
@@ -30,7 +30,6 @@ export class CreateStock {
   //   exchange: new FormControl(''),
   // });
   //----------------------------------------
-  @Output() stockCreated = new EventEmitter<Stock>();
   private stock: Stock;
   public stockForm!: FormGroup;
   constructor( private fb: FormBuilder, private stockService: StockService) {
@@ -42,7 +41,7 @@ export class CreateStock {
     this.stockForm = this.fb.group({
       name: ['', [Validators.required]],
       price: [0, [Validators.required, Validators.min(0)]],
-      code: [''],
+      code: ['', [Validators.required]],
       previousPrice: [0],
       exchange: [''],
     });
@@ -67,16 +66,17 @@ export class CreateStock {
     this.stockForm.value.previousPrice,
     this.stockForm.value.exchange
   );
-    console.log('Form submitted with stock:', this.stockForm.value);
-    this.stockService.createStock(stock).subscribe(result => {
-      if (result.success) {
-        console.log('Stock created successfully:', result.message);
-        this.stockCreated.emit(this.stock);
-        this.stockForm.reset();
-      } else {
-        console.error('Failed to create stock:', result.message);
-      }
-    });
+    if (this.stockForm.invalid) {
+      this.stockForm.markAllAsTouched();
+      return;
+    }
+
+    const result = this.stockService.createStock(stock);
+    if (result.success) {
+      this.stockForm.reset({ name: '', price: 0, code: '', previousPrice: 0, exchange: '' });
+    } else {
+      this.stockForm.get('code')?.setErrors({ duplicate: true });
+    }
   }
   get name(){ return this.stockForm.get('name'); }
   get code(){ return this.stockForm.get('code'); }

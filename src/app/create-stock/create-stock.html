@@ -14,6 +14,9 @@
                     <div *ngIf="stockForm.get('code')?.errors?.['required']">
                         Code is required
                     </div>
+                    <div *ngIf="stockForm.get('code')?.errors?.['duplicate']">
+                        This stock code already exists
+                    </div>
                 </div>
             </div>
             <div class="stock-price">

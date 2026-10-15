@@ -10,7 +10,7 @@
   </div>
 
   <button
-    (click)="toggleFavorite($event)"
+    (click)="toggleFavorite()"
     [disabled]="stock.favorite">
     Toggle Favorite
   </button>
@@ -19,7 +19,7 @@
     View / Update
   </button>
 
-  <button (click)="deleteStock($event)">
+  <button (click)="deleteStock()">
     Delete Stock
   </button>
 </div>

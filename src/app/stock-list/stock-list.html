@@ -6,13 +6,12 @@
     type="text"
     placeholder="Find Stock by Code"
     [(ngModel)]="searchCode"
-    (keyup)="findStockByCode()"
   />
   <p>Search Code: {{ searchCode }}</p>
   </div>
-  @if (stocks.length > 0) {
-    @for (stock of stocks; track stock.code) {
-      <app-stock-item [stock]="stock" (stockUpdated)="loadStocks()" (stockDeleted)="loadStocks()"></app-stock-item>
+  @if (filteredStocks.length > 0) {
+    @for (stock of filteredStocks; track stock.code) {
+      <app-stock-item [stock]="stock"></app-stock-item>
     }
   } @else {
     <p>No stocks available.</p>

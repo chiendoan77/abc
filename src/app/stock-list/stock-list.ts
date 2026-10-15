@@ -1,9 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, Signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { StockItem } from '../stock-item/stock-item';
 import { Stock } from '../model/stock';
 import { StockService } from '../service/stock-service';
-import { FormsModule } from '@angular/forms';
-import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   imports: [StockItem, FormsModule],
@@ -12,34 +11,17 @@ import { ChangeDetectorRef } from '@angular/core';
   templateUrl: './stock-list.html',
 })
 export class StockList {
-  @Input() stocks: Stock[] = [];
-  searchCode: string = '';
+  readonly stocks: Signal<Stock[]>;
+  searchCode = '';
 
-  constructor( private stockService: StockService, private cdr: ChangeDetectorRef) {};
-
-  loadStocks() {
-  this.stockService.getStocks().subscribe(stocks => {
-    console.log('StockList nhan duoc:', stocks);
-    this.stocks = [...stocks];
-    this.searchCode = '';
-    this.cdr.detectChanges();
-  });
-}
-
-  ngOnInit() {
-    this.loadStocks();
+  constructor(private readonly stockService: StockService) {
+    this.stocks = stockService.stocks;
   }
-  findStockByCode() {
-    if (this.searchCode.trim() === '') {
-      this.loadStocks();
-    } else {
-      this.stockService.findStockByCode(this.searchCode).subscribe(stock => {
-        if (stock) {
-          this.stocks = [stock];
-        } else {
-          this.stocks = [];
-        }
-      });
-    }
+
+  get filteredStocks() {
+    const code = this.searchCode.trim().toLowerCase();
+    return code
+      ? this.stocks().filter((stock) => stock.code.toLowerCase().includes(code))
+      : this.stocks();
   }
 }

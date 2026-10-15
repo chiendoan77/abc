@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Stock } from '../model/stock';
 import { StockService } from '../service/stock-service';
 import { FormsModule } from '@angular/forms';
@@ -10,14 +10,14 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './stock-item.css',
   templateUrl: './stock-item.html',
 })
-export class StockItem  implements OnInit {
+export class StockItem {
   @Input() stock!: Stock;
-  @Output() stockUpdated = new EventEmitter<Stock>();
-  @Output() stockDeleted = new EventEmitter<Stock>();
   showDialog: boolean = false;
   editForm: any = {};
+  private originalCode = '';
   openDetail() {
     this.editForm = { ...this.stock };
+    this.originalCode = this.stock.code;
     this.showDialog = true;
   }
   closeDialog() {
@@ -28,44 +28,23 @@ export class StockItem  implements OnInit {
       return;
     }
 
-    this.stock.name = this.editForm.name;
-    this.stock.code = this.editForm.code;
-    this.stock.price = Number(this.editForm.price);
-    this.stock.previousPrice = Number(this.editForm.previousPrice);
-    this.stock.exchange = this.editForm.exchange;
-    this.showDialog = false;
-    this.stockUpdated.emit();
+    const result = this.stockService.updateStock({
+      ...this.editForm,
+      price: Number(this.editForm.price),
+      previousPrice: Number(this.editForm.previousPrice),
+    }, this.originalCode);
+    if (result.success) {
+      this.showDialog = false;
+    }
   }
   constructor(private stockService: StockService) { }
 
-  ngOnInit() {
+  toggleFavorite() {
+    this.stockService.toggleFavorite(this.stock);
   }
-  toggleFavorite(event: Event) {
-    console.log('toggleFavorite called');
-    this.stockService.toggleFavorite(this.stock).subscribe(updatedStock => {
-      this.stock = updatedStock;
-    });
-  }
-  deleteStock(event: Event) {
-    this.stockService.delteStock(this.stock).subscribe(result => {
-      if (result.success) {
-        console.log('Stock deleted successfully');
-        this.stockDeleted.emit(this.stock);
-      } else {
-        console.error('Failed to delete stock');
-      }
-    }); 
+  deleteStock() {
+    this.stockService.deleteStock(this.stock);
   }
 
-  updateStock(event: Event) {
-    this.stockService.updateStock(this.stock).subscribe(result => {
-      if (result.success) {
-        console.log('Stock updated successfully');
-        this.stockUpdated.emit(this.stock);
-      } else {
-        console.error('Failed to update stock');
-      }
-    }); 
-  }
 }
 
