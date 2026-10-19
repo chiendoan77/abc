@@ -1,70 +1,94 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, Subject, throwError } from 'rxjs';
+import { Observable, of, Subject, switchMap, tap, throwError, map } from 'rxjs';
 import { Stock } from '../model/stock';
-import { HttpClient } from '@angular/common/http';
+import { Httpservice } from '../http/httpservice';
 
 @Injectable({ providedIn: 'root' })
 export class StockService {
-  private stocks: Stock[] = [
-    new Stock('Test Stock Company', 85, 'TSC', 80),
-    new Stock('Test Stock Company 2', 25, 'TSC2', 20),
-    new Stock('Test Stock Company 3', 50, 'TSC3', 45),
-  ];
   stocksChanged = new Subject<void>();
-  
-  constructor(private http: HttpClient){}
+
+  constructor(private httpService: Httpservice) {}
 
   getStocks(): Observable<Stock[]> {
-    return of([...this.stocks]);
+    return this.httpService.getStock().pipe(
+      map((stocks: any[]) => stocks.map((stock: any) => this.toStock(stock))),
+    );
   }
 
   createStock(stock: Stock): Observable<any> {
-    const found = this.stocks.find((each) => each.code === stock.code);
-    if (found) {
-      return of(false);
-    }
+    return this.getStocks().pipe(
+      switchMap((stocks) => {
+        const found = stocks.some((each) => each.code.toLowerCase() === stock.code.toLowerCase());
+        if (found) return of(false);
 
-    this.stocks.push(stock);
-    this.stocksChanged.next();
-    return of({ success: true, message: 'Stock created successfully ' + stock.code });
+        return this.httpService.postStock(stock).pipe(
+          tap(() => this.stocksChanged.next()),
+          map(() => ({ success: true, message: 'Stock created successfully ' + stock.code })),
+        );
+      }),
+    );
   }
 
   toggleFavorite(stock: Stock): Observable<Stock> {
-    const foundStock = this.stocks.find((each) => each.code === stock.code);
-    if (foundStock) {
-      foundStock.favorite = !foundStock.favorite;
-      this.stocksChanged.next();
-      return of(foundStock);
-    }
-    return throwError(() => new Error('Stock not found'));
+    if (stock.id === undefined) return throwError(() => new Error('Stock id is missing'));
+
+    const updatedStock = { ...stock, favorite: !stock.favorite };
+    return this.httpService.updateStock(stock.id, updatedStock).pipe(
+      map((updated) => this.toStock(updated)),
+      tap(() => this.stocksChanged.next()),
+    );
   }
 
   deleteStock(stock: Stock): Observable<any> {
-    const index = this.stocks.findIndex((each) => each.code === stock.code);
-    if (index !== -1) {
-      this.stocks.splice(index, 1);
-      this.stocksChanged.next();
-      return of({ success: true, message: 'Stock deleted successfully' });
-    }
-    return throwError(() => new Error('Stock not found'));
+    if (stock.id === undefined) return throwError(() => new Error('Stock id is missing'));
+
+    return this.httpService.deleteStock(stock.id).pipe(
+      tap(() => this.stocksChanged.next()),
+      map(() => ({ success: true, message: 'Stock deleted successfully' })),
+    );
   }
 
-  findStockByCode(code: string): Observable<Stock | undefined> {
-    const foundStock = this.stocks.find((each) => each.code === code);
-    return of(foundStock);
+  findStockByCode(code: string): Observable<Stock[]> {
+    return this.getStocks().pipe(
+      map((stocks) => {
+        const searchCode = code.trim().toLowerCase();
+        return searchCode
+          ? stocks.filter((stock) => stock.code.toLowerCase().includes(searchCode))
+          : stocks;
+      }),
+    );
   }
 
   updateStock(stock: Stock, originalCode: string = stock.code): Observable<any> {
-    const foundStock = this.stocks.find((each) => each.code === originalCode);
-    if (foundStock) {
-      foundStock.name = stock.name;
-      foundStock.code = stock.code;
-      foundStock.price = stock.price;
-      foundStock.previousPrice = stock.previousPrice;
-      foundStock.exchange = stock.exchange;
-      this.stocksChanged.next();
-      return of({ success: true, message: 'Stock updated successfully' });
-    }
-    return throwError(() => new Error('Stock not found'));
+    if (stock.id === undefined) return throwError(() => new Error('Stock id is missing'));
+
+    return this.getStocks().pipe(
+      switchMap((stocks) => {
+        const duplicate = stocks.some((each) =>
+          each.id !== stock.id &&
+          each.code.toLowerCase() === stock.code.toLowerCase() &&
+          stock.code.toLowerCase() !== originalCode.toLowerCase(),
+        );
+        if (duplicate) return of({ success: false, message: 'Stock code already exists' });
+
+        return this.httpService.updateStock(stock.id!, stock).pipe(
+          tap(() => this.stocksChanged.next()),
+          map(() => ({ success: true, message: 'Stock updated successfully' })),
+        );
+      }),
+    );
+  }
+
+  private toStock(data: Stock): Stock {
+    const stock = new Stock(
+      data.name,
+      Number(data.price),
+      data.code,
+      Number(data.previousPrice),
+      data.exchange,
+    );
+    stock.id = data.id;
+    stock.favorite = data.favorite === true || String(data.favorite) === 'true';
+    return stock;
   }
 }

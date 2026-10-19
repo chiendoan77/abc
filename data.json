@@ -1,0 +1,62 @@
+{
+  "stocks": [
+    {
+      "id": "1",
+      "name": "Test Stock Company",
+      "code": "TSC",
+      "price": "85",
+      "previousPrice": "80",
+      "exchange": "NASDAQ",
+      "favorite": "false"
+    },
+    {
+      "name": "Second Stock Company",
+      "price": 1031,
+      "code": "SSC",
+      "previousPrice": 201,
+      "exchange": "NSE",
+      "id": "2",
+      "favorite": true
+    },
+    {
+      "id": "3",
+      "name": "Last Stock Company",
+      "code": "LSC",
+      "price": "876",
+      "previousPrice": "765",
+      "exchange": "NYSE",
+      "favorite": "false"
+    },
+    {
+      "id": "4",
+      "name": "Last Stock Company",
+      "code": "LSC",
+      "price": "876",
+      "previousPrice": "765",
+      "exchange": "NYSE",
+      "favorite": "false"
+    },
+    {
+      "name": "đấ",
+      "price": 3231,
+      "code": "sdas",
+      "previousPrice": 2312,
+      "exchange": "",
+      "id": "s9qKTkB9-FE",
+      "favorite": true
+    },
+    {
+      "name": "ádasdas",
+      "price": 123123,
+      "code": "ưedwe",
+      "previousPrice": 2312,
+      "exchange": "",
+      "id": "8",
+      "favorite": true
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  },
+  "$schema": "./node_modules/json-server/schema.json"
+}

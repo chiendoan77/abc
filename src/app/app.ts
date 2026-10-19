@@ -1,14 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { CreateStock } from './create-stock/create-stock';
-import { ReactiveFormsModule } from '@angular/forms';
-import { StockList } from './stock-list/stock-list';
 
 @Component({
-  imports: [StockList, CreateStock, ReactiveFormsModule],
+  imports: [RouterOutlet, CreateStock],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App {
-  protected readonly title = signal('APP TEST ANGULAR');
-}
+export class App {}

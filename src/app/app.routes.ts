@@ -1,8 +1,7 @@
 import { Routes } from '@angular/router';
-import { StockItem } from './stock-item/stock-item';
-import { CreateStock } from './create-stock/create-stock';
+import { StockList } from './stock-list/stock-list';
 
 export const routes: Routes = [
-    { path: '', component: StockItem },
-    {path: '**', redirectTo: ''},
+  { path: '', component: StockList, pathMatch: 'full' },
+  { path: '**', redirectTo: '' },
 ];

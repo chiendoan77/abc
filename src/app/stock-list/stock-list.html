@@ -6,16 +6,15 @@
     type="text"
     placeholder="Find Stock by Code"
     [(ngModel)]="searchCode"
+    (ngModelChange)="findStocks()"
   />
   <p>Search Code: {{ searchCode }}</p>
   </div>
-  @if (stocks$ | async; as stocks) {
-    @if (filteredStocks(stocks).length > 0) {
-      @for (stock of filteredStocks(stocks); track stock.code) {
-        <app-stock-item [stock]="stock"></app-stock-item>
-      }
-    } @else {
-      <p>No stocks available.</p>
+  @if (stocks.length > 0) {
+    @for (stock of stocks; track stock.id) {
+      <app-stock-item [stock]="stock"></app-stock-item>
     }
+  } @else {
+    <p>No stocks available.</p>
   }
 </div>
